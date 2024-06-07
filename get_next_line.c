@@ -6,15 +6,17 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:23:41 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/06 19:25:35 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/07 12:13:21 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_getlen(char *str, t_list *lst, char option)
+#include <stdio.h>
+size_t	ft_len(char *str, t_list *lst, char option)
 {
 	size_t	i;
+	size_t	j;
 
 	i = 0;
 	if (option == 's')
@@ -32,50 +34,54 @@ size_t	ft_getlen(char *str, t_list *lst, char option)
 	{
 		while (lst != NULL)
 		{
-			while (lst->content[i] != '\0')
-				i++;
+			j = 0;
+			while (lst->content[j] != '\0')
+				j++;
+			i += j;
 			lst = lst->next;
 		}
 	}
 	return (i);
 }
 
-#include <stdio.h>
 char	*ft_lstjoin(t_list *lst)
 {
 	size_t	i;
+	size_t	len;
 	char	*str;
 
-	str = (char *)malloc(1000 * sizeof(char));
+	str = (char *)malloc(sizeof(char) * (ft_len(NULL, lst, 'b') + 1));
 	if (!str)
 		return (NULL);
 	str[0] = '\0';
 	while (lst != NULL)
 	{
 		i = 0;
+		len = ft_len(str, NULL, 's');
 		while (lst->content[i] != '\0')
 		{
-			str[ft_getlen(str, NULL, 's') + i] = lst->content[i];
+			str[len + i] = lst->content[i];
 			i++;
 		}
 		lst = lst->next;
 	}
-	str[i] = '\0';
+	str[len + i] = '\0';
 	return (str);
 }
 
 char	*get_next_line(int fd)
 {
 	t_list	*new;
-	char	*content;
-	void	*buffer[BUFFER_SIZE];
 	t_list	*stash;
+	char	*content;
+	/*static char	*rest;*/
+	void	*buffer[BUFFER_SIZE];
 
 	stash = 0;
+	*buffer = 0;
 	while (read(fd, buffer, BUFFER_SIZE))
 	{
-		// write(1, (char *)buffer, BUFFER_SIZE);
-		content = ft_strdup((char *)buffer);
+		content = ft_strndup((char *)buffer, ft_len((char *)buffer, NULL, 's'));
 		new = ft_lstnew(content);
 		if (!new)
 		{
@@ -87,12 +93,19 @@ char	*get_next_line(int fd)
 		if (ft_find_index(content, '\n'))
 			break ;
 	}
-	return (ft_lstjoin(stash));
+	content = ft_lstjoin(stash);
+	ft_lstclear(&stash);
+	return (content);
 }
 
 #include <fcntl.h>
 int main()
 {
 	int fd = open("test.txt", O_RDONLY);
-	printf("%s", get_next_line(fd));
+	char *str1 = get_next_line(fd);
+	printf("%s", str1);
+	char *str2 = get_next_line(fd);
+	printf("%s", str2);
+	free(str1);
+	free(str2);
 }

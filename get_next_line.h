@@ -6,7 +6,7 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:27:12 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/06 19:04:46 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/07 11:58:51 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,10 @@ typedef struct s_list
 }	t_list;
 
 int		ft_find_index(char *str, char needle);
-char    *ft_strdup(char *str);
+char    *ft_strndup(char *str, size_t n);
 void	ft_lstclear(t_list **lst);
 void	ft_lstadd_back(t_list **lst, t_list *new);
 t_list	*ft_lstnew(void *content);
-size_t	ft_getlen(char *str, t_list *lst, char option);
+size_t	ft_len(char *str, t_list *lst, char option);
 
 #endif

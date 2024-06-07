@@ -6,23 +6,23 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:26:16 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/06 19:28:51 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/07 11:57:49 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char    *ft_strdup(char *str)
+char    *ft_strndup(char *str, size_t n)
 {
 	size_t  i;
 	char    *copy;
 
 	i = 0;
-	copy = (char *)malloc((ft_getlen(str, NULL, 's') + 1) * sizeof(char));
+	copy = (char *)malloc(sizeof(char) * (n + 1));
 	if (!copy)
 		return (NULL);
 	copy[0] = '\0';
-	while (str[i] != '\0')
+	while (str[i] != '\0' && i < n)
 	{
 		copy[i] = str[i];
 		i++;
@@ -90,6 +90,7 @@ void	ft_lstclear(t_list **lst)
 	while (*lst != NULL)
 	{
 		temp = (*lst)->next;
+		free((*lst)->content);
 		free(*lst);
 		*lst = temp;
 	}
