@@ -6,7 +6,7 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:27:12 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/07 11:58:51 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/08 19:34:47 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,9 @@
 # include <unistd.h>
 # include <stdlib.h>
 
-typedef struct s_list
-{
-	struct s_list	*next;
-	char			*content;
-}	t_list;
-
-int		ft_find_index(char *str, char needle);
-char    *ft_strndup(char *str, size_t n);
-void	ft_lstclear(t_list **lst);
-void	ft_lstadd_back(t_list **lst, t_list *new);
-t_list	*ft_lstnew(void *content);
-size_t	ft_len(char *str, t_list *lst, char option);
+char	*ft_strjoin(char *s1, char *s2);
+char	*ft_strndup(char const *s, size_t n);
+size_t	find_index(char *str, char needle);
+size_t	ft_strlen(const char *str);
 
 #endif

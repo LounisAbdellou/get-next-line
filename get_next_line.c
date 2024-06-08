@@ -6,115 +6,80 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:23:41 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/08 12:22:14 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/08 19:31:31 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-#include <stdio.h>
-size_t	ft_len(char *str, t_list *lst, char option)
+static char	*get_line(int fd, char *rest, char *buffer)
 {
-	size_t	i;
-	size_t	j;
+	char		*tmp;
+	ssize_t		read_len;
 
-	i = 0;
-	if (option == 's')
-		while (str[i] != '\0')
-			i++;
-	else if (option == 'l')
+	read_len = 1;
+	while (read_len)
 	{
-		while (lst != NULL)
-        {
-			lst = lst->next;
-			i++;
-        }
-	}
-	else if (option == 'b')
-	{
-		while (lst != NULL)
+		read_len = read(fd, buffer, BUFFER_SIZE);
+		if (read_len == -1)
 		{
-			j = 0;
-			while (lst->content[j] != '\0')
-				j++;
-			i += j;
-			lst = lst->next;
+			free(rest);
+			return (NULL);
 		}
+		if (read_len == 0)
+			break ;
+		buffer[read_len] = '\0';
+		tmp = rest;
+		rest = ft_strjoin(tmp, buffer);
+		free(tmp);
+		tmp = NULL;
+		if (find_index(buffer, '\n'))
+			break ;
 	}
-	return (i);
+	return (rest);
 }
 
-char	*ft_lstjoin(t_list *lst)
+static char	*trim_line(char *line)
 {
 	size_t	i;
 	size_t	len;
 	char	*str;
 
-	str = (char *)malloc(sizeof(char) * (ft_len(NULL, lst, 'b') + 1));
-	if (!str)
+	i = find_index(line, '\n');
+	len = ft_strlen(line);
+	if (i == len || line[i + 1] == '\0')
 		return (NULL);
-	str[0] = '\0';
-	while (lst != NULL)
-	{
-		i = 0;
-		len = ft_len(str, NULL, 's');
-		while (lst->content[i] != '\0')
-		{
-			str[len + i] = lst->content[i];
-			i++;
-		}
-		lst = lst->next;
-	}
-	str[len + i] = '\0';
+	i += 1;
+	str = ft_strndup(line + i, len - i);
+	line[i] = '\0';
 	return (str);
 }
 
 char	*get_next_line(int fd)
 {
-	size_t		flag;
-	t_list		*new;
-	t_list		*stash;
-	char		*content;
-	char		*buffer;
 	static char	*rest;
+	char		*line;
+	char		*buffer;
 
-	stash = 0;
-	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	buffer = (char *) malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	{
+		free(rest);
+		free(buffer);
+		return (NULL);
+	}
 	if (!buffer)
 		return (NULL);
-	*buffer = 0;
-	if (rest)
-	{
-		new = ft_lstnew(rest);
-		ft_lstadd_back(&stash, new);
-	}
-	while (read(fd, buffer, BUFFER_SIZE))
-	{
-		flag = ft_find_index(buffer, '\n') + 1;
-		if (flag)
-		{
-			content = ft_strndup(buffer, flag);
-			rest = ft_strndup(buffer + flag, ft_len(buffer, NULL, 's') - flag);
-		}
-		else
-			content = ft_strndup(buffer, ft_len(buffer, NULL, 's'));
-		new = ft_lstnew(content);
-		if (!new)
-		{
-			ft_lstclear(&stash);
-			free(content);
-			return (NULL);
-		}
-		ft_lstadd_back(&stash, new);
-		if (rest)
-			break ;
-	}
-	content = ft_lstjoin(stash);
-	ft_lstclear(&stash);
-	return (content);
+	if (!rest)
+		rest = ft_strndup("", 0);
+	line = get_line(fd, rest, buffer);
+	rest = trim_line(line);
+	free(buffer);
+	return (line);
 }
 
 #include <fcntl.h>
+#include <stdio.h>
 int main()
 {
 	int fd = open("test.txt", O_RDONLY);
