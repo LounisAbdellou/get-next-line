@@ -6,7 +6,7 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:27:12 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/08 19:34:47 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/08 23:13:17 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 
+char	*get_next_line(int fd);
 char	*ft_strjoin(char *s1, char *s2);
 char	*ft_strndup(char const *s, size_t n);
 size_t	find_index(char *str, char needle);

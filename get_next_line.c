@@ -6,7 +6,7 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:23:41 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/08 19:31:31 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/08 23:25:31 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ static char	*get_line(int fd, char *rest, char *buffer)
 		if (read_len == 0)
 			break ;
 		buffer[read_len] = '\0';
+		if (!rest)
+			rest = ft_strndup("", 0);
 		tmp = rest;
 		rest = ft_strjoin(tmp, buffer);
 		free(tmp);
@@ -45,12 +47,19 @@ static char	*trim_line(char *line)
 	size_t	len;
 	char	*str;
 
-	i = find_index(line, '\n');
+	i = 0;
 	len = ft_strlen(line);
-	if (i == len || line[i + 1] == '\0')
+	while (line[i] != '\n' && line[i] != '\0')
+		i++;
+	if (line[i] == 0 || line[i + 1] == 0)
 		return (NULL);
 	i += 1;
 	str = ft_strndup(line + i, len - i);
+	if (*str == '\0')
+	{
+		free(str);
+		str = NULL;
+	}
 	line[i] = '\0';
 	return (str);
 }
@@ -70,23 +79,10 @@ char	*get_next_line(int fd)
 	}
 	if (!buffer)
 		return (NULL);
-	if (!rest)
-		rest = ft_strndup("", 0);
 	line = get_line(fd, rest, buffer);
-	rest = trim_line(line);
 	free(buffer);
+	if (!line)
+		return (NULL);
+	rest = trim_line(line);
 	return (line);
-}
-
-#include <fcntl.h>
-#include <stdio.h>
-int main()
-{
-	int fd = open("test.txt", O_RDONLY);
-	char *str1 = get_next_line(fd);
-	printf("%s", str1);
-	char *str2 = get_next_line(fd);
-	printf("%s", str2);
-	free(str1);
-	free(str2);
 }
