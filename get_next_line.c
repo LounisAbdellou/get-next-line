@@ -6,7 +6,7 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:23:41 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/07 12:13:21 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/08 12:22:14 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,17 +71,33 @@ char	*ft_lstjoin(t_list *lst)
 
 char	*get_next_line(int fd)
 {
-	t_list	*new;
-	t_list	*stash;
-	char	*content;
-	/*static char	*rest;*/
-	void	*buffer[BUFFER_SIZE];
+	size_t		flag;
+	t_list		*new;
+	t_list		*stash;
+	char		*content;
+	char		*buffer;
+	static char	*rest;
 
 	stash = 0;
+	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+	if (!buffer)
+		return (NULL);
 	*buffer = 0;
+	if (rest)
+	{
+		new = ft_lstnew(rest);
+		ft_lstadd_back(&stash, new);
+	}
 	while (read(fd, buffer, BUFFER_SIZE))
 	{
-		content = ft_strndup((char *)buffer, ft_len((char *)buffer, NULL, 's'));
+		flag = ft_find_index(buffer, '\n') + 1;
+		if (flag)
+		{
+			content = ft_strndup(buffer, flag);
+			rest = ft_strndup(buffer + flag, ft_len(buffer, NULL, 's') - flag);
+		}
+		else
+			content = ft_strndup(buffer, ft_len(buffer, NULL, 's'));
 		new = ft_lstnew(content);
 		if (!new)
 		{
@@ -90,7 +106,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		ft_lstadd_back(&stash, new);
-		if (ft_find_index(content, '\n'))
+		if (rest)
 			break ;
 	}
 	content = ft_lstjoin(stash);
