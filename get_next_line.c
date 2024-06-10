@@ -6,7 +6,7 @@
 /*   By: labdello <labdello@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/03 18:23:41 by labdello          #+#    #+#             */
-/*   Updated: 2024/06/08 23:25:31 by labdello         ###   ########.fr       */
+/*   Updated: 2024/06/10 12:42:29 by labdello         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,8 @@ char	*get_next_line(int fd)
 	{
 		free(rest);
 		free(buffer);
+		rest = NULL;
+		buffer = NULL;
 		return (NULL);
 	}
 	if (!buffer)
